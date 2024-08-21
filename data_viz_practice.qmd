@@ -2,6 +2,167 @@
 title: "EDS 221 day 8 interactive"
 author: "Stephen Carroll"
 format: html
+editor_options: 
+  chunk_output_type: console
 ---
 
+```{r}
+library(here)
+library(tidyverse)
+library(janitor)
+
+# install new plotting packages ----
+install.packages("patchwork")
+install.packages("ggrepel")
+install.packages("gghighlight")
+install.packages("paletteer")
+install.packages("ggExtra")
+install.packages("ggbeeswarm")
+# and for another datset we will explore ----
+install.packages("gapminder")
+# spatial ----
+install.packages("sf")
+```
+
+
+```{r}
+# attach packages ----
+
+library(patchwork)
+library(ggrepel)
+library(gghighlight)
+library(paletteer)
+library(ggExtra)
+library(ggbeeswarm)
+library(gapminder)
+library(sf)
+```
+
+```{r}
+# read in the data ----
+lizards <- read_csv(here("data_tidy", "lizards.csv"))
+```
+
+```{r}
+# different ways to plot the same graph ----
+ggplot(data = lizards, aes(x = total_length, y = weight)) +
+  geom_point() +
+  geom_line()
+
+ggplot(data = lizards) +
+  geom_point(aes(x = total_length, y = weight))
+
+ggplot() +
+  geom_point(data = lizards, aes(x =total_length, y = weight))
+```
+
+
+```{r}
+# a simple histogram ----
+ggplot(data = lizards, aes(x =total_length))+
+  geom_histogram()
+```
+
+```{r}
+# a basic jitter plot ----
+ggplot(data = lizards, aes(y = common_name, x = weight))+
+  geom_jitter()
+```
+
+```{r}
+# aesthetics in the geom() are going to be based on the variable ----
+ggplot(dat = lizards, aes(x = weight))+
+  geom_histogram(color = "orange", 
+                 fill = "purple", 
+                 linewidth = 2, 
+                 linetype = "dotted")
+```
+
+
+```{r}
+# color codes can be used ----
+# look up number codes for differnt shapes ----
+# adjust size and opacity with alpha ---
+ggplot(data =  lizards, aes(x = total_length, y = weight)) +
+  geom_point(color = "#52B2CF",
+             fill = "#D1CFE2", 
+             shape = 22, 
+             size = 4, 
+             alpha = 0.5)
+```
+
+```{r}
+# updating an aesthetics based on a variable ----
+# anything based on a variable goes inside the aesthetic() ----
+ggplot(data = lizards, aes(x = total_length, y = weight)) +
+  geom_point(aes(color = common_name,
+                 size = total_length),
+             alpha = 0.5)
+
+```
+
+```{r}
+# exploring different themes ----
+ggplot(data = lizards, aes(x = site, y = weight)) +
+  geom_jitter(aes(color = common_name))+
+  theme_light()
+```
+
+```{r}
+# add a title and labels to your axes ----
+ggplot(data = lizards, aes(x = total_length, y = weight)) +
+  geom_point()+
+  labs(x = "Total length (mm)", 
+       y = "Weight (grams)", title = "Lizard Site")
+```
+
+```{r}
+# use facet_wrap or facet_grid to create multiple plots ----
+# use scales = "free" to have indiv. plots with independent scales ----
+ggplot(data = lizards, aes(x = total_length, y = weight)) +
+  geom_point()+
+  facet_wrap(~common_name, ncol = 3, scales = "free") +
+  labs(x = "Total length (mm)",
+       y = "Weight (grams)")
+```
+
+
+```{r}
+# use facet_grid to plot data subsets based on variables ----
+ggplot(data = lizards, aes(x = total_length, y = weight)) +
+  geom_point() +
+  facet_grid(sex ~ tail)
+```
+
+```{r}
+# changing the order of variables in plots ----
+lizards_counts <- lizards %>%
+  count(common_name) 
+
+ggplot(data = lizards_counts, aes(y = fct_reorder(common_name, n), x = n)) +
+  geom_col() 
+```
+
+```{r}
+# an example using some of these tools ----
+geom_point(aes(color = common_name),
+             size = 2) +
+  theme_minimal() +
+  labs( x = "Total length (mm)",
+        y = "Weight (g)",
+        color = "Lizard species")+
+  facet_wrap(~ common_name, scales = "free")
+
+```
+
+```{r}
+# another big example combining styles ---
+
+ggplot(data = lizards, aes(y = fct_infreq(common_name))) +
+  geom_bar(aes(fill = site)) +
+  theme_minimal() +
+  labs(x = "Lizard counts", 
+       y = "Species (common name)") +
+  facet_grid(sex ~ tail)
+```
 
