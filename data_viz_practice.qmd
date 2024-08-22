@@ -236,7 +236,7 @@ p +
 mono <- read_csv(here("data_tidy", "mono.csv"))
 
 # use "\n" around axis label to make it a sub title ----
-# use annotate to add labels that don't correspond to axes ----
+# use annotate to add labels that don't correspond to axes
 ggplot(data = mono, aes(x = year, y = lake_level)) +
 
   geom_rect(aes(xmin = 1941, 
